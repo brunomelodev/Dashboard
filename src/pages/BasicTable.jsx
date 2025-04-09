@@ -1,168 +1,220 @@
+import { useState } from "react";
+
 function BasicTable() {
+  const users = Array.from({ length: 30 }, (_, i) => ({
+    id: i + 1,
+    name: `User ${i + 1}`,
+    company: `Company ${i + 1}`,
+    city: `City ${i + 1}`,
+    created: `2025-04-${(i % 30) + 1}`.padStart(2, "0"),
+    avatar: `User-${i + 1}`,
+  }));
+
+  const ITEMS_PER_PAGE = 6;
+
+  const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+
+  // Filtro por nome
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Ordenação
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    const { key, direction } = sortConfig;
+    if (!key) return 0;
+    if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
+    if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  const totalPages = Math.ceil(sortedUsers.length / ITEMS_PER_PAGE);
+  const startIndex = (page - 1) * ITEMS_PER_PAGE;
+  const visibleUsers = sortedUsers.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+
+  const handleSort = (key) => {
+    setPage(1);
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  const getSortArrow = (key) => {
+    if (sortConfig.key !== key) return null;
+    return sortConfig.direction === "asc" ? "▲" : "▼";
+  };
+
   return (
-    <div className="p-4 border-t border-gray-100 sm:p-6">
-      <div className="space-y-6">
-        <div className="rounded-2xl border border-gray-200 bg-white pt-4">
-          <div className="flex flex-col gap-2 px-5 mb-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800">
-                Latest Transactions
-              </h3>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <form>
-                <div className="relative">
-                  <button
-                    type="submit"
-                    className="absolute left-4 top-1/2 -translate-y-1/2"
-                    aria-label="Search"
-                  >
-                    <svg
-                      className="fill-gray-500"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M3.04199 9.37381C3.04199 5.87712 5.87735 3.04218 9.37533 3.04218C12.8733 3.04218 15.7087 5.87712 15.7087 9.37381C15.7087 12.8705 12.8733 15.7055 9.37533 15.7055C5.87735 15.7055 3.04199 12.8705 3.04199 9.37381ZM9.37533 1.54218C5.04926 1.54218 1.54199 5.04835 1.54199 9.37381C1.54199 13.6993 5.04926 17.2055 9.37533 17.2055C11.2676 17.2055 13.0032 16.5346 14.3572 15.4178L17.1773 18.2381C17.4702 18.531 17.945 18.5311 18.2379 18.2382C18.5308 17.9453 18.5309 17.4704 18.238 17.1775L15.4182 14.3575C16.5367 13.0035 17.2087 11.2671 17.2087 9.37381C17.2087 5.04835 13.7014 1.54218 9.37533 1.54218Z"
-                      />
-                    </svg>
-                  </button>
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="h-[42px] w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-[42px] pr-4 text-sm text-gray-800 placeholder:text-gray-400 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200 xl:w-[300px]"
-                  />
-                </div>
-              </form>
-            </div>
-          </div>
+    <section className="p-6 xl:max-w-7xl xl:mx-auto">
+      <div className="rounded-2xl bg-white p-6 shadow-md mb-6">
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Buscar por nome..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+            className="w-full md:w-1/3 px-4 py-2 border rounded-md text-sm"
+          />
+        </div>
 
-          <div className="overflow-hidden">
-            <div className="max-w-full px-5 overflow-x-auto sm:px-6">
-              <table className="min-w-full">
-                <thead className="border-y border-gray-100">
-                  <tr>
-                    <th className="py-3 text-start text-sm font-normal text-gray-500">
-                      Name
-                    </th>
-                    <th className="px-4 py-3 text-start text-sm font-normal text-gray-500">
-                      Date
-                    </th>
-                    <th className="px-4 py-3 text-start text-sm font-normal text-gray-500">
-                      Price
-                    </th>
-                    <th className="px-4 py-3 text-start text-sm font-normal text-gray-500">
-                      Category
-                    </th>
-                    <th className="px-4 py-3 text-start text-sm font-normal text-gray-500">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  <tr>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src="https://placehold.co/32x32"
-                          alt="brand"
-                          width="32"
-                          height="32"
-                          className="w-8 h-8"
-                        />
-                        <span className="block text-sm font-medium text-gray-700">
-                          Bought PYPL
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">
-                      Nov 23, 01:00 PM
-                    </td>
-                    <td className="px-4 py-4 text-sm text-gray-700">
-                      $2,567.88
-                    </td>
-                    <td className="px-4 py-4 text-sm text-gray-700">Finance</td>
-                    <td className="px-4 py-4 text-sm text-gray-700">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-600">
-                        Success
-                      </span>
-                    </td>
-                  </tr>
-
-                  {/* Repita a estrutura acima para os outros registros */}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="px-6 py-4 border-t border-gray-200">
-            <div className="flex items-center justify-between">
-              <button
-                disabled
-                className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 opacity-50 cursor-not-allowed"
-              >
-                <svg
-                  className="fill-current"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="border-b text-gray-700">
+              <tr>
+                <th className="p-3">Name</th>
+                <th
+                  className="p-3 cursor-pointer select-none"
+                  onClick={() => handleSort("company")}
                 >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M2.58301 9.99868C2.58272 10.1909 2.65588 10.3833 2.80249 10.53L7.79915 15.5301C8.09194 15.8231 8.56682 15.8233 8.85981 15.5305C9.15281 15.2377 9.15297 14.7629 8.86018 14.4699L5.14009 10.7472L16.6675 10.7472C17.0817 10.7472 17.4175 10.4114 17.4175 9.99715C17.4175 9.58294 17.0817 9.24715 16.6675 9.24715L5.14554 9.24715L8.86017 5.53016C9.15297 5.23717 9.15282 4.7623 8.85983 4.4695C8.56684 4.1767 8.09197 4.17685 7.79917 4.46984L2.84167 9.43049C2.68321 9.568 2.58301 9.77087 2.58301 9.99715C2.58301 9.99766 2.58301 9.99817 2.58301 9.99868Z"
-                  />
-                </svg>
-                <span className="hidden sm:inline">Previous</span>
+                  Company {getSortArrow("company")}
+                </th>
+                <th
+                  className="p-3 hidden sm:table-cell cursor-pointer select-none"
+                  onClick={() => handleSort("city")}
+                >
+                  City {getSortArrow("city")}
+                </th>
+                <th
+                  className="p-3 hidden sm:table-cell cursor-pointer select-none"
+                  onClick={() => handleSort("created")}
+                >
+                  Created {getSortArrow("created")}
+                </th>
+                <th className="p-3 w-24 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visibleUsers.map((user) => (
+                <tr
+                  key={user.id}
+                  className="border-b last:border-none even:bg-gray-50 hover:bg-blue-50 transition"
+                >
+                  <td className="p-3 flex items-center gap-2">
+                    <img
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.avatar}`}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-full bg-gray-100"
+                    />
+                    <span>{user.name}</span>
+                  </td>
+                  <td className="p-3">{user.company}</td>
+                  <td className="p-3 hidden sm:table-cell">{user.city}</td>
+                  <td className="p-3 hidden sm:table-cell text-gray-500">
+                    <small>{user.created}</small>
+                  </td>
+                  <td className="p-3 whitespace-nowrap text-right">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        title="Visualizar"
+                        className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                        >
+                          <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z" />
+                          <path d="M12,4.5C7,4.5 2.7,7.6 1,12C2.7,16.4 7,19.5 12,19.5C17,19.5 21.3,16.4 23,12C21.3,7.6 17,4.5 12,4.5Z" />
+                        </svg>
+                      </button>
+                      <button
+                        title="Editar"
+                        className="p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                        >
+                          <path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9Z" />
+                          <path d="M17.66,3L15.13,5.13L18.87,8.87L21.4,6.34C21.78,5.96 21.78,5.32 21.4,4.94L19.06,2.6C18.68,2.22 18.04,2.22 17.66,2.6Z" />
+                        </svg>
+                      </button>
+                      <button
+                        title="Excluir"
+                        className="p-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                        >
+                          <path d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9Z" />
+                          <path d="M9,8H11V17H9V8ZM13,8H15V17H13V8Z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Paginação */}
+          <div className="flex justify-between items-center mt-4">
+            <p className="text-sm text-gray-500">
+              Página {page} de {totalPages}
+            </p>
+            <div className="flex items-center gap-1 flex-wrap">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 transition"
+              >
+                Prev
               </button>
 
-              <ul className="hidden items-center gap-0.5 sm:flex">
-                <li>
-                  <button className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white text-sm font-medium">
-                    1
-                  </button>
-                </li>
-                <li>
-                  <button className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 text-sm font-medium hover:bg-blue-100 hover:text-blue-600">
-                    2
-                  </button>
-                </li>
-                <li>
-                  <button className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 text-sm font-medium hover:bg-blue-100 hover:text-blue-600">
-                    3
-                  </button>
-                </li>
-              </ul>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (n) =>
+                    n === 1 ||
+                    n === totalPages ||
+                    (n >= page - 2 && n <= page + 2)
+                )
+                .map((n, i, arr) => (
+                  <span key={n} className="flex">
+                    {i > 0 && n !== arr[i - 1] + 1 && (
+                      <span className="px-1">...</span>
+                    )}
+                    <button
+                      onClick={() => setPage(n)}
+                      className={`px-3 py-1 text-sm rounded transition ${
+                        n === page
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-blue-100"
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  </span>
+                ))}
 
-              <button className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                <span className="hidden sm:inline">Next</span>
-                <svg
-                  className="fill-current"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M17.4175 9.9986C17.4178 10.1909 17.3446 10.3832 17.198 10.53L12.2013 15.5301C11.9085 15.8231 11.4337 15.8233 11.1407 15.5305C10.8477 15.2377 10.8475 14.7629 11.1403 14.4699L14.8604 10.7472L3.33301 10.7472C2.91879 10.7472 2.58301 10.4114 2.58301 9.99715C2.58301 9.58294 2.91879 9.24715 3.33301 9.24715L14.8549 9.24715L11.1403 5.53016C10.8475 5.23717 10.8477 4.7623 11.1407 4.4695C11.4336 4.1767 11.9085 4.17685 12.2013 4.46984L17.1588 9.43049C17.3173 9.568 17.4175 9.77087 17.4175 9.99715C17.4175 9.99763 17.4175 9.99812 17.4175 9.9986Z"
-                  />
-                </svg>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 transition"
+              >
+                Next
               </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 export default BasicTable;

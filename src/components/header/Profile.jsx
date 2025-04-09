@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
+import useAuth from "../../hooks/useAuth";
 
 function Profile() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-
+  const { logout } = useAuth();
   const userMenuRef = useRef(null);
 
   useOutsideClick(userMenuRef, () => setIsUserMenuOpen(false));
@@ -54,7 +55,7 @@ function Profile() {
         </li>
         <li>
           <Link
-            to="/"
+            onClick={logout}
             className="flex items-center text-[13px] gap-2 py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50"
           >
             <i className="ri-logout-box-r-line text-[16px]"></i>
