@@ -9,6 +9,7 @@ import ModalForm from "./pages/ModalForm";
 import Login from "./pages/Login";
 import AuthProvider from "./context/AuthProvider";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import ListSchools from "./pages/ListSchools";
 
 function AppRoutes() {
   return (
@@ -23,6 +24,7 @@ function AppRoutes() {
           }
         >
           <Route path="/" element={<Initial />} />
+          <Route path="/schools" element={<ListSchools />} />
           <Route path="/forms" element={<BasicForm />} />
           <Route path="/tables" element={<BasicTable />} />
           <Route path="/modals" element={<ModalForm />} />

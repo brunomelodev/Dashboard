@@ -5,6 +5,7 @@ import { useSidebar } from "../hooks/useSidebar";
 
 const menuItems = [
   { type: "link", label: "Dashboard", to: "/", icon: "ri-home-2-line" },
+  { type: "link", label: "Schools", to: "schools", icon: "ri-school-line" },
   {
     type: "dropdown",
     label: "Básico",
