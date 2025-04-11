@@ -31,7 +31,9 @@ const menuItems = [
 ];
 
 function Sidebar() {
-  const { isOpen, toggleSidebar } = useSidebar();
+  const { isOpen, toggleSidebar } = useSidebar(
+    window.innerWidth < 768 ? "false" : "true"
+  );
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   // 📱 Detecta mobile
