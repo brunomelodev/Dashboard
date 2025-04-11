@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Criamos uma instância do Axios com a URL base da API
 const api = axios.create({
-  baseURL: "http://localhost:3000", // Substitua pela URL da sua API
+  baseURL: "https://piunivesp.icu", // Substitua pela URL da sua API
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",

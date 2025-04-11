@@ -86,11 +86,12 @@ function ListSchools() {
     <section className="p-6 xl:max-w-7xl xl:mx-auto">
       <div className="rounded-2xl bg-white p-6 shadow-md mb-6">
         <div className="overflow-x-auto">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">Escolas</h1>
-
-            <div className="flex items-center gap-2">
-              <label htmlFor="search" className="text-sm">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4 sm:gap-2">
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+              <h1 className="text-2xl font-bold">Escolas</h1>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+              <label htmlFor="search" className="text-sm sm:mr-2">
                 Buscar por nome:
               </label>
               <input
@@ -102,19 +103,19 @@ function ListSchools() {
                   setCurrentPage(1); // volta para a primeira página
                 }}
                 placeholder="Digite o nome..."
-                className="border rounded px-2 py-1"
+                className="border rounded px-2 py-1 w-full sm:w-64" // ajuste de largura para input
               />
             </div>
 
-            <div>
-              <label className="mr-2">Registros por página:</label>
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+              <label className="text-sm sm:mr-2">Registros por página:</label>
               <select
                 value={perPage}
                 onChange={(e) => {
                   setPerPage(Number(e.target.value));
                   setCurrentPage(1); // Resetar para a primeira página
                 }}
-                className="border rounded px-2 py-1"
+                className="border rounded px-2 py-1 w-full sm:w-auto"
               >
                 <option value={1}>1</option>
                 <option value={10}>10</option>
@@ -123,6 +124,7 @@ function ListSchools() {
               </select>
             </div>
           </div>
+
           {loading ? (
             <p>Carregando...</p>
           ) : (
